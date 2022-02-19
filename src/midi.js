@@ -17,14 +17,14 @@ export function getInstruments(midiData,mapping) {
     let instruments = {};
     for (let track = 0; track < midiData.tracks.length; track++) {
         let index = mapping[track];
-        switch(index) {
+        switch(track) {
             case 3:
                 // Set drum synths (percussion)
-                instruments[track] = new NoiseSynth(options.noiseOptions).toDestination();
+                instruments[index] = new NoiseSynth(options.noiseOptions).toDestination();
                 break;
             case 2:
                 // Set triangle synths (bass instruments)
-                instruments[track] = new PolySynth(Synth, options.triangleOptions).toDestination();
+                instruments[index] = new PolySynth(Synth, options.triangleOptions).toDestination();
                 break;
             default:
 
@@ -34,7 +34,7 @@ export function getInstruments(midiData,mapping) {
                     "type" : "pulse"
                 }})
                 // Set pulse synths for  all else
-                instruments[track] = p;
+                instruments[index] = p;
                 break;
         }
     }
