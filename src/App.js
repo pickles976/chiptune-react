@@ -2,8 +2,11 @@ import logo from './logo.svg';
 import './App.css';
 import React, {useEffect, useState} from "react";
 import {DragDropContext,Droppable,Draggable} from "react-beautiful-dnd";
+import {Midi} from "@tonejs/midi";
 import "./DraggableList.jsx";
 import DraggableList from './DraggableList.jsx';
+import * as instrumentNums from "./instrumentData.js";
+import axios from "axios";
 
 import {Transport, Draw, getDestination} from "tone";
 import {getMidi, getInstruments, getNotes, getParts} from "./midi.js";
@@ -86,12 +89,23 @@ function App() {
     }
   }
 
+  function downloadMidi(){
+    midi.tracks.forEach((track,index) => {
+      track.instrument = instrumentNums[mapping[index]];
+    })
+    const name = midi.name + ".mid";
+    console.log(midi)
+    // const buff = new Buffer.from(midi.toArray());
+    axios.post('https://localhost:8000/postMidi', midi).then(response => console.log(response));
+  }
+
   return (
     <div>
       <input type='file' id='file-selector' accept=".mid" onInput={loadFile}></input>
       <button onClick={playPause}>Play</button>
       <button onClick={stop}>Stop</button>
       <DraggableList length={4} callback={updateMap}/>
+      <button onClick={downloadMidi}>Download</button>
     </div>
   );
 }
