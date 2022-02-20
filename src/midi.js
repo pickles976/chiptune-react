@@ -1,4 +1,5 @@
 import {Midi} from "@tonejs/midi";
+import { Buffer } from "buffer";
 import Tone, {PolySynth,Synth, NoiseSynth, Part} from "tone";
 import * as options from "./options.js";
 
@@ -7,12 +8,26 @@ const TRACK_NUM = 4;
 // Get all midi data from uploaded file
 export async function getMidi() {
     const midiFile = document.getElementById('file-selector').files[0];
+    console.log(midiFile)
     const midiURL = window.URL.createObjectURL(midiFile);
     let midi = await Midi.fromUrl(midiURL);
-
+    console.log(midi.toArray())
     return midi;
 }
 
+export async function saveMidi(response){
+
+    console.log(response)
+    // const reader = response.body.getReader({mode: "byob"})
+    
+    const myBlob = new Blob([response.data],{type: "audio/mid"})
+
+    console.log(myBlob)
+    var midiURL = URL.createObjectURL(myBlob);
+    let midi = await Midi.fromUrl(midiURL);
+    console.log(midi.toArray())
+    return midi;
+}
 
 // Get every instrument based on their instrument number
 export function getInstruments(midiData,mapping) {
