@@ -5,7 +5,6 @@ import {DragDropContext,Droppable,Draggable} from "react-beautiful-dnd";
 import {Midi} from "@tonejs/midi";
 import "./DraggableList.jsx";
 import DraggableList from './DraggableList.jsx';
-import * as instrumentNums from "./instrumentData.js";
 import axios from "axios";
 
 import {Transport, Draw, getDestination} from "tone";
@@ -15,7 +14,15 @@ import { Tone } from 'tone/build/esm/core/Tone';
 
 function App() {
 
-  // const [tracks,setTracks] = useState(0);
+  let instrumentNums = [81,81,40,119];
+  let perc = [false,false,false,true];
+  let instrument = {                   // and object representing the program change events
+    number : 81,              // the instrument number 0-127
+    family: "Lead",               // the family of instruments, read only.
+    name : "Synth",                // the name of the instrument
+    percussion: false          // if the instrument is a percussion instrument
+  }
+
   let instruments = [];
   let notes = [];
   let mapping = [0,1,2,3];
@@ -91,12 +98,15 @@ function App() {
 
   function downloadMidi(){
     midi.tracks.forEach((track,index) => {
-      track.instrument = instrumentNums[mapping[index]];
+      let temp = instrument;
+      temp.number = instrumentNums[mapping[index]];
+      temp.percussion = perc[mapping[index]];
+      midi.tracks[index].instrument = temp;
     })
-    const name = midi.name + ".mid";
-    console.log(midi)
-    // const buff = new Buffer.from(midi.toArray());
-    axios.post('https://localhost:8000/postMidi', midi).then(response => console.log(response));
+    let temp = midi.toArray();
+    // TODO: Node.js server to save off data
+    // console.log(new Midi(temp))
+    axios.post('https://localhost:8000/postMidi', midi.toArray()).then(response => console.log(response));
   }
 
   return (
