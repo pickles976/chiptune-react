@@ -16,13 +16,7 @@ export async function getMidi() {
 }
 
 export async function saveMidi(response){
-
-    console.log(response)
-    // const reader = response.body.getReader({mode: "byob"})
-    
     const myBlob = new Blob([response.data],{type: "audio/mid"})
-
-    console.log(myBlob)
     var midiURL = URL.createObjectURL(myBlob);
     let midi = await Midi.fromUrl(midiURL);
     console.log(midi.toArray())
