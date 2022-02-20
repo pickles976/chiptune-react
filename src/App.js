@@ -10,29 +10,7 @@ import {getAnalysers, allContext, drawWave} from "./visualize";
 
 function App() {
 
-  const headers =   {
-        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:74.0) Gecko/20100101 Firefox/74.0",
-        "Host": "www.my-url.com",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "fr,en;q=0.7,de;q=0.3",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Referer": "https://www.my-url.com/",
-        "DNT": "1",
-        "Connection": "keep-alive",
-        "Cookie": "JSESSIONID=345619E4B9164E346E099B23C2EA1762-mc5.koeb46-5_i01_1001; rbzid=DcpM4PC9zel6z+f6GAv5kAymylqw001/v299Eg/jfmAzp/jIzSZxjje6++LdfAPK5HlgwAtqDhYScjobif3t21F4I0MqlMIWC7WE61suzUrkmWGJiRvZE2iVsxOZTdeCYI8kt9yAltmgj5v+lz2+SY1rmnKSkCEiV/VfMZ5aaDZT/1WnWRZ/7HXIM5yRd+uzcG4SpJylPSwrNlEF4Z03GURur6nao2uLMV727hBs0GH5dW4run3KoQGS+GbTV4zBifAKIkqyhKoDlVP70w13z3jg5HOdDihROWDG0hROP4jVzbY92gYYQp11AkPhVJtn; rbzsessionid=aa17403285c68f873066a34ca3967ddf;",
-        "Upgrade-Insecure-Requests": "1",
-        "Cache-Control": "max-age=0",
-        "Content-Type": "application/x-www-form-urlencoded",
-      }
-
   let instrumentNums = [80,80,39,118];
-  // let instrumentNames = ["synth lead", "synth lead", "strings", "percussive"]
-  // let instrument = {                   // and object representing the program change events
-  //   family: "Lead",               // the family of instruments, read only.
-  //   number : 81,              // the instrument number 0-127
-  //   name : "Synth"                // the name of the instrument
-  // }
-
   let instruments = [];
   let notes = [];
   let mapping = [0,1,2,3];
