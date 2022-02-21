@@ -58,7 +58,7 @@ function App() {
     Transport.cancel();
   
     // Set initial volume
-    getDestination().volume.value = 1.0;
+    getDestination().volume.value = 0.5;
     
     // Get all the midi data
     const midiData = getMidi();    
