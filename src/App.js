@@ -1,12 +1,13 @@
 import './App.css';
-import React from "react";
+import React, {useEffect} from "react";
 import "./DraggableList.jsx";
 import DraggableList from './DraggableList.jsx';
 import {Buffer} from 'buffer';
 import axios from "axios";
 import {Transport, Draw, getDestination} from "tone";
 import {getMidi, getInstruments, getNotes, getParts, saveMidi} from "./midi.js";
-import {getAnalysers, allContext, drawWave} from "./visualize";
+import {getAnalysers, allContext, drawWave, onLoad} from "./visualize";
+import { Grid, Typography, Toolbar, Button, IconButton, AppBar, Input, InputLabel} from "@material-ui/core";
 
 function App() {
 
@@ -50,15 +51,16 @@ function App() {
     });
   }
 
+  function volumeCallback(e) {
+    getDestination().volume.value = e.target.value;
+  }
+
   //load midifile
   function loadFile() {
 
     // Stop any playback and clear current song
     stop();
     Transport.cancel();
-  
-    // Set initial volume
-    getDestination().volume.value = 0.5;
     
     // Get all the midi data
     const midiData = getMidi();    
@@ -85,7 +87,6 @@ function App() {
       Transport.cancel();
     
       // Set initial volume
-      getDestination().volume.value = 1.0;
       const midiData = saveMidi(response);
 
       midiData.then((midiData) => {
@@ -129,15 +130,50 @@ function App() {
     link.click();
   }
 
+  useEffect(() => {
+    // call initializers
+    onLoad();
+    getDestination().volume.value = document.getElementById('volSlider').value;
+  },[])
+
   return (
+    <>
+    {/* HEADER */}
     <div>
-      <input type='file' id='file-selector' accept=".mid" onInput={loadFile}></input>
-      <button onClick={requestSong}>Generate Song</button>
-      <button onClick={playPause}>Play</button>
-      <button onClick={stop}>Stop</button>
-      <DraggableList length={4} callback={updateMap}/>
-      <button onClick={downloadMidi}>Download</button>
+      <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" 
+              component="div" sx={{ flexGrow: 1 }}>
+              Chiptune Generator v1.0
+            </Typography>
+          </Toolbar>
+      </AppBar>
     </div>
+    {/* BODY */}
+    <div style={{padding: "10px", alignItems: "center"}}>
+    <Grid container spacing={2}>
+      <Grid item xs={6}>
+        <td><label>Generate A Song</label></td>
+        <button onClick={requestSong}>Generate</button>
+      </Grid>
+      <Grid item xs={6}>
+        <td><label>Load a File Locally</label></td>
+        <input type='file' id='file-selector' accept=".mid" onInput={loadFile}></input>
+      </Grid>
+      <Grid item xs={12}>
+        <button onClick={playPause}>Play</button>
+        <button onClick={stop}>Stop</button>
+        <input type="range" min="-60" max="0" defaultValue="-15" class="slider" id="volSlider" onInput={volumeCallback}></input>
+      </Grid>
+      <Grid item xs={12}>
+        <DraggableList length={4} callback={updateMap}/>
+      </Grid>
+      <Grid item xs={12}>
+        <button onClick={downloadMidi}>Download</button>
+      </Grid>
+    </Grid>
+    </div>
+    </>
   );
 }
 

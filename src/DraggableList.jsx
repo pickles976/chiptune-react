@@ -74,24 +74,21 @@ const DraggableList = (props) => {
           {(provided, snapshot) => (
             <div
               ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
+              style={{...getListStyle(snapshot.isDraggingOver), padding: "0px", background: 'rgba(0, 0, 0, 0.0)'}}
               {...provided.droppableProps}
             >
               {items.map((item, index) => (
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided, snapshot) => (
-                    <div
+                      <canvas id={"wave"+item.content} width="full" height="full" 
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      style={getItemStyle(
+                      style={{...getItemStyle(
                         snapshot.isDragging,
-                        provided.draggableProps.style
-                      )}
-                    >
-                      {/* {item.content} */}
-                      <canvas id={"wave"+item.content} width="250" height="100"></canvas>
-                    </div>
+                        provided.draggableProps.style  
+                      ),
+                      padding: "0px"}}></canvas>
                   )}
                 </Draggable>
               ))}
