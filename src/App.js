@@ -8,6 +8,7 @@ import {Transport, Draw, getDestination} from "tone";
 import {getMidi, getInstruments, getNotes, getParts, saveMidi} from "./midi.js";
 import {getAnalysers, allContext, drawWave, onLoad} from "./visualize";
 import { Grid, Typography, Toolbar, Button, IconButton, AppBar, Input, InputLabel} from "@material-ui/core";
+import { Audio } from  "react-loader-spinner";
 
 function App() {
 
@@ -35,6 +36,10 @@ function App() {
   }
 
   function updateContext(){
+
+    const midistuff = document.getElementById("midistuff");
+    console.log(midistuff)
+    midistuff.style.display = "block";
 
     Transport.cancel();
 
@@ -78,15 +83,32 @@ function App() {
     })
   }
 
+  function showbar(){
+    // show loading bar
+    const songRequester = document.getElementById("songRequester");
+    const loadingBar = document.getElementById("loadingBar");
+    loadingBar.style.display = "block";
+    songRequester.style.display = "none";
+  }
+
+  function hidebar(){
+    // show loading bar
+    const songRequester = document.getElementById("songRequester");
+    const loadingBar = document.getElementById("loadingBar");
+    loadingBar.style.display = "none";
+    songRequester.style.display = "block";
+  }
+
   function requestSong(){
+
+    showbar();
 
     axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
 
       // Stop any playback and clear current song
       stop();
       Transport.cancel();
-    
-      // Set initial volume
+
       const midiData = saveMidi(response);
 
       midiData.then((midiData) => {
@@ -97,9 +119,11 @@ function App() {
         notes = getNotes(midi);
 
         updateContext();
+        hidebar();
 
       })
     })
+
   }
 
   function updateMap(newMapping){
@@ -142,7 +166,7 @@ function App() {
     <div>
       <AppBar position="static">
           <Toolbar>
-            <Typography variant="h6" 
+            <Typography variant="h6"
               component="div" sx={{ flexGrow: 1 }}>
               Chiptune Generator v1.0
             </Typography>
@@ -153,20 +177,33 @@ function App() {
     <div style={{padding: "10px", alignItems: "center"}}>
     <Grid container spacing={2}>
       <Grid item xs={6}>
-        <td><label>Generate A Song</label></td>
-        <button onClick={requestSong}>Generate</button>
+          <div id="songRequester">
+            <td><label>Generate A Song</label></td>
+            <button onClick={requestSong}>Generate</button>
+          </div>
+          <div id="loadingBar" style={{display: "none"}}>
+            <Audio color="#00BFFF" height={60} width={60}/>
+          </div>
       </Grid>
       <Grid item xs={6}>
         <td><label>Load a File Locally</label></td>
         <input type='file' id='file-selector' accept=".mid" onInput={loadFile}></input>
       </Grid>
+    </Grid>
+    <Grid container spacing={2} id="midistuff" style={{display: "none"}}>
       <Grid item xs={12}>
         <button onClick={playPause}>Play</button>
         <button onClick={stop}>Stop</button>
         <input type="range" min="-60" max="0" defaultValue="-15" class="slider" id="volSlider" onInput={volumeCallback}></input>
       </Grid>
       <Grid item xs={12}>
-        <DraggableList length={4} callback={updateMap}/>
+        <DraggableList id="scope" length={4} callback={updateMap}/>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6" 
+            component="div" sx={{ flexGrow: 1 }}>
+            Drag and Drop the channels to switch waveforms
+          </Typography>
       </Grid>
       <Grid item xs={12}>
         <button onClick={downloadMidi}>Download</button>
