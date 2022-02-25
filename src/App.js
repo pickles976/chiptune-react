@@ -1,16 +1,20 @@
 import './App.css';
-import React, {useEffect} from "react";
 import "./DraggableList.jsx";
 import DraggableList from './DraggableList.jsx';
-import {Buffer} from 'buffer';
+
+import React, {useEffect} from "react";
 import axios from "axios";
 import {Transport, Draw, getDestination} from "tone";
-import {getMidi, getInstruments, getNotes, getParts, saveMidi} from "./midi.js";
-import {getAnalysers, allContext, drawWave, onLoad} from "./visualize";
-import { Grid, Typography, Toolbar, Button, IconButton, AppBar, Input, InputLabel} from "@material-ui/core";
+import { Grid, Typography, Toolbar,AppBar} from "@material-ui/core";
 import { Audio } from  "react-loader-spinner";
 
+// local files
+import {getMidi, getInstruments, getNotes, getParts, saveMidi} from "./utils/midi.js";
+import {getAnalysers, allContext, drawWave, onLoad} from "./utils/visualize";
+
 function App() {
+
+  const MAX_TRACKS = 5;
 
   // Hard-coded instrumnet nums per channel
   const instrumentNums = [80,80,39,118];
@@ -81,7 +85,7 @@ function App() {
     midiData.then((midiData) => {
 
         // if midi has proper number of tracks
-        if(midiData.tracks.length <= 4)
+        if(midiData.tracks.length <= MAX_TRACKS)
         {
           midi = midiData;
           mapping = [0,1,2,3];
