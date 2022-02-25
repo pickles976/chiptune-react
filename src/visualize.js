@@ -1,46 +1,52 @@
 import {Analyser} from "tone";
 
+// Global data
 let analysers = null;
 let contexts = null;
+let canvasWidth = 0, canvasHeight = 0;
+
+// HORizontal and VERTical lines
+const VERT = 4, HOR = 6;
+
 // Blue, Red, Yellow, Black
 let colors = {0: "#569dcb", 1: "#f9b131", 2: "#FF2326", 3: "#FFFFFF"};
 
+// Draw black background
 export function onLoad(){
 
   for (let i = 0; i < 4; i++){
-    const canv = document.querySelector('#wave' + i);
-    const cont = canv.getContext('2d');
-    const canvasWidth = canv.width, canvasHeight = canv.height;
-    cont.fillStyle = 'rgba(0,0,0,1.0)';
-    cont.fillRect(0,0,canvasWidth,canvasHeight);
-    drawGrid(canv,cont);
+    const canvas = document.querySelector('#wave' + i); // has style information
+    const context = canvas.getContext('2d'); // has drawing context
+    canvasWidth = canvas.width;
+    canvasHeight = canvas.height;
+    context.fillStyle = 'rgba(0,0,0,1.0)';
+    context.fillRect(0,0,canvasWidth,canvasHeight);
+    drawGrid(context);
   }
 
 }
 
-function drawGrid(canv,ctx){
-
-    const vert = 4, hor = 6;
-    const canvasWidth = canv.width, canvasHeight = canv.height;
+// takes in drawing context
+function drawGrid(context){
 
     // set line stroke and line width
-    ctx.strokeStyle = 'green';
-    ctx.lineWidth = 1;
+    context.strokeStyle = 'green';
+    context.lineWidth = 1.0;
 
-    for (let i = 0; i < hor; i++){
+    for (let i = 0; i < HOR; i++){
       // draw a red line
-      ctx.beginPath();
-      ctx.moveTo(i * canvasWidth / hor, 0);
-      ctx.lineTo(i * canvasWidth / hor, canvasHeight);
-      ctx.stroke();
+      context.beginPath();
+      context.moveTo(i * canvasWidth / HOR, 0);
+      context.lineTo(i * canvasWidth / HOR, canvasHeight);
+      context.stroke();
     }
 
-    for (let i = 0; i < vert; i++){
+    for (let i = 0; i < VERT; i++){
       // draw a red line
-      ctx.beginPath();
-      ctx.moveTo(0, i * canvasHeight / vert);
-      ctx.lineTo(canvasWidth, i * canvasHeight / vert);
-      ctx.stroke();
+      context.beginPath();
+      context.moveTo(0, i * canvasHeight / VERT);
+      context.lineTo(canvasWidth, i * canvasHeight / VERT);
+      context.stroke();
     }
 }
 
@@ -72,30 +78,36 @@ export function allContext(instruments) {
 
 // Create soundwave of each instrument
 export function createWave(canv, values, color) {
-    const canvasWidth = canv.width, canvasHeight = canv.height;
-    let context = canv.getContext('2d');
 
+    // clear the image
+    const context = canv.getContext('2d');
     context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    // draw background
     context.fillStyle = 'rgba(0,0,0,1.0)';
     context.fillRect(0,0,canvasWidth,canvasHeight);
-    drawGrid(canv,context);
+
+    // draw grid
+    drawGrid(context);
+
+    // initialize line path
     context.beginPath();
-  
     context.lineJoin = "round";
-    context.lineWidth = 2;
-    
-  
+    context.lineWidth = 3;
     context.moveTo(0, canvasHeight - (values[0] / 255) * canvasHeight);
 
     // ADD THIS TO GIVE EACH CHANNEL ITS OWN COLOR
     // context.strokeStyle = colors[color % 4];
 
+    // connect lines
     for (let i = 1, len = values.length; i < len; i++){
       let val = values[i];
       let x = canvasWidth * (i / len);
       let y = canvasHeight - (val * canvasHeight);
       context.lineTo(x, y);
     }
+
+    //draw line
     context.stroke();
   }
 

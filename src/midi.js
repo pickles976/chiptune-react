@@ -13,6 +13,7 @@ export async function getMidi() {
     return midi;
 }
 
+// Save Midi from http request response object
 export async function saveMidi(response){
     const myBlob = new Blob([response.data],{type: "audio/mid"})
     var midiURL = URL.createObjectURL(myBlob);
@@ -21,7 +22,7 @@ export async function saveMidi(response){
 }
 
 // Get every instrument based on their instrument number
-export function getInstruments(midiData,mapping) {
+export function getInstruments(mapping) {
     let instruments = {};
     for (let track = 0; track < TRACK_NUM; track++) {
         let index = mapping[track];

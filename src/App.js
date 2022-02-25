@@ -12,11 +12,14 @@ import { Audio } from  "react-loader-spinner";
 
 function App() {
 
-  let instrumentNums = [80,80,39,118];
+  // Hard-coded instrumnet nums per channel
+  const instrumentNums = [80,80,39,118];
+  let mapping = [0,1,2,3];
+
+  // The Global value of our MIDI object w/ channels and notes
+  let midi = null;
   let instruments = [];
   let notes = [];
-  let mapping = [0,1,2,3];
-  let midi = null;
 
   const url = "http://localhost:5000/getMidi"
 
@@ -36,10 +39,12 @@ function App() {
   }
 
   function updateContext(){
-
+    
+    // Show midi control panel
     const midistuff = document.getElementById("midistuff");
     midistuff.style.display = "block";
 
+    // stop transport object
     Transport.cancel();
 
     // Load and schedule each part for tracks that have notes
@@ -62,6 +67,7 @@ function App() {
   //load midifile
   function loadFile() {
 
+    // hide error message
     document.getElementById('channelError').style.display = "none";
 
     // Stop any playback and clear current song
@@ -74,11 +80,12 @@ function App() {
     // If a midi file has been  it for playback
     midiData.then((midiData) => {
 
+        // if midi has proper number of tracks
         if(midiData.tracks.length <= 4)
         {
           midi = midiData;
           mapping = [0,1,2,3];
-          instruments = getInstruments(midi,mapping);
+          instruments = getInstruments(mapping);
           notes = getNotes(midi);
           updateContext();
         }else{
@@ -88,40 +95,44 @@ function App() {
     })
   }
 
+  // show loading bar
   function showbar(){
-    // show loading bar
     const songRequester = document.getElementById("songRequester");
     const loadingBar = document.getElementById("loadingBar");
     loadingBar.style.display = "block";
     songRequester.style.display = "none";
   }
 
+  // hide loading bar
   function hidebar(){
-    // show loading bar
     const songRequester = document.getElementById("songRequester");
     const loadingBar = document.getElementById("loadingBar");
     loadingBar.style.display = "none";
     songRequester.style.display = "block";
   }
 
+  // Request a MIDI from server
   function requestSong(){
 
+    // hide error text
     document.getElementById('errorText').style.display = "none";
     showbar();
 
+    // request generated midi song from server
     axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
 
       // Stop any playback and clear current song
       stop();
       Transport.cancel();
 
+      // save midi
       const midiData = saveMidi(response);
 
       midiData.then((midiData) => {
 
         midi = midiData;
         mapping = [0,1,2,3];
-        instruments = getInstruments(midi,mapping);
+        instruments = getInstruments(mapping);
         notes = getNotes(midi);
 
         updateContext();
@@ -136,12 +147,12 @@ function App() {
 
   }
 
+  // update the channel mapping based on Waveforms
   function updateMap(newMapping){
     if (midi) {
       mapping = newMapping;
-      instruments = getInstruments(midi,mapping);
+      instruments = getInstruments(mapping);
       notes = getNotes(midi);
-      // Transport.cancel();
       updateContext();
     }
   }
@@ -164,6 +175,7 @@ function App() {
     link.click();
   }
 
+  // Runs once on component mount
   useEffect(() => {
     // call initializers
     onLoad();
