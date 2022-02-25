@@ -8,10 +8,8 @@ const TRACK_NUM = 4;
 // Get all midi data from uploaded file
 export async function getMidi() {
     const midiFile = document.getElementById('file-selector').files[0];
-    console.log(midiFile)
     const midiURL = window.URL.createObjectURL(midiFile);
     let midi = await Midi.fromUrl(midiURL);
-    console.log(midi.toArray())
     return midi;
 }
 
@@ -19,7 +17,6 @@ export async function saveMidi(response){
     const myBlob = new Blob([response.data],{type: "audio/mid"})
     var midiURL = URL.createObjectURL(myBlob);
     let midi = await Midi.fromUrl(midiURL);
-    console.log(midi.toArray())
     return midi;
 }
 

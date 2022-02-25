@@ -38,7 +38,6 @@ function App() {
   function updateContext(){
 
     const midistuff = document.getElementById("midistuff");
-    console.log(midistuff)
     midistuff.style.display = "block";
 
     Transport.cancel();
@@ -63,6 +62,8 @@ function App() {
   //load midifile
   function loadFile() {
 
+    document.getElementById('channelError').style.display = "none";
+
     // Stop any playback and clear current song
     stop();
     Transport.cancel();
@@ -73,12 +74,16 @@ function App() {
     // If a midi file has been  it for playback
     midiData.then((midiData) => {
 
-        midi = midiData;
-        mapping = [0,1,2,3];
-        instruments = getInstruments(midi,mapping);
-        notes = getNotes(midi);
-
-        updateContext();
+        if(midiData.tracks.length <= 4)
+        {
+          midi = midiData;
+          mapping = [0,1,2,3];
+          instruments = getInstruments(midi,mapping);
+          notes = getNotes(midi);
+          updateContext();
+        }else{
+          document.getElementById('channelError').style.display = "block";
+        }
 
     })
   }
@@ -101,6 +106,7 @@ function App() {
 
   function requestSong(){
 
+    document.getElementById('errorText').style.display = "none";
     showbar();
 
     axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
@@ -122,7 +128,11 @@ function App() {
         hidebar();
 
       })
-    })
+    }).catch((error) => {
+      // throw error
+      document.getElementById('errorText').style.display = "block";
+      hidebar();
+    });
 
   }
 
@@ -184,10 +194,12 @@ function App() {
           <div id="loadingBar" style={{display: "none"}}>
             <Audio color="#00BFFF" height={60} width={60}/>
           </div>
+          <text id="errorText" style={{display: "none", color: "rgb(1.0,0.0,0.0)"}}>Error connecting to server!</text>
       </Grid>
       <Grid item xs={6}>
         <td><label>Load a File Locally</label></td>
         <input type='file' id='file-selector' accept=".mid" onInput={loadFile}></input>
+        <text id="channelError" style={{display: "none", color: "rgb(1.0,0.0,0.0)"}}>Cannot load MIDI-- too many channels!</text>
       </Grid>
     </Grid>
     <Grid container spacing={2} id="midistuff" style={{display: "none"}}>
