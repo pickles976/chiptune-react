@@ -25,7 +25,8 @@ function App() {
   let instruments = [];
   let notes = [];
 
-  const url = "http://localhost:5000/getMidi"
+  // const url = "http://localhost:5000/getMidi"
+  const url = "https://vlpmiuk1fk.execute-api.us-east-2.amazonaws.com/default/midi-generator"
 
   // stop playback
   function stop() {
@@ -124,7 +125,7 @@ function App() {
 
     // request generated midi song from server
     // axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
-    axios.get(url).then((response) => {
+    axios.get(url, { "Access-Control-Allow-Origin": '*', Connection: "keep-alive" }).then((response) => {
 
       // Stop any playback and clear current song
       stop();
