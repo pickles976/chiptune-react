@@ -9,7 +9,7 @@ import { Grid, Typography, Toolbar,AppBar} from "@material-ui/core";
 import { Audio } from  "react-loader-spinner";
 
 // local files
-import {getMidi, getInstruments, getNotes, getParts, saveMidi} from "./utils/midi.js";
+import {getMidi, getInstruments, getNotes, getParts, saveMidi, saveMidiFromString} from "./utils/midi.js";
 import {getAnalysers, allContext, drawWave, onLoad} from "./utils/visualize";
 
 function App() {
@@ -123,14 +123,16 @@ function App() {
     showbar();
 
     // request generated midi song from server
-    axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
+    // axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
+    axios.get(url).then((response) => {
 
       // Stop any playback and clear current song
       stop();
       Transport.cancel();
 
       // save midi
-      const midiData = saveMidi(response);
+      // const midiData = saveMidi(response);
+      const midiData = saveMidiFromString(response);
 
       midiData.then((midiData) => {
 
