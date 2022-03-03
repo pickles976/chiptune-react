@@ -5,7 +5,7 @@ import DraggableList from './DraggableList.jsx';
 import React, {useEffect} from "react";
 import axios from "axios";
 import {Transport, Draw, getDestination} from "tone";
-import { Grid, Typography, Toolbar,AppBar} from "@material-ui/core";
+import { Grid, Typography, Toolbar,AppBar,InputLabel} from "@material-ui/core";
 import { Audio } from  "react-loader-spinner";
 
 // local files
@@ -19,6 +19,7 @@ function App() {
   // Hard-coded instrumnet nums per channel
   const instrumentNums = [80,80,39,118];
   let mapping = [0,1,2,3];
+  let bpm = 80;
 
   // The Global value of our MIDI object w/ channels and notes
   let midi = null;
@@ -67,6 +68,13 @@ function App() {
 
   function volumeCallback(e) {
     getDestination().volume.value = e.target.value;
+  }
+
+  function bpmCallback(e) {
+    bpm = e.target.value;
+    const bpmlabel = document.getElementById("bpmLabel");
+    bpmlabel.innerHTML = "bpm: " + bpm
+    Transport.bpm.value = e.target.value;
   }
 
   //load midifile
@@ -225,7 +233,10 @@ function App() {
       <Grid item xs={12}>
         <button onClick={playPause}>Play</button>
         <button onClick={stop}>Stop</button>
-        <input type="range" min="-60" max="0" defaultValue="-15" class="slider" id="volSlider" onInput={volumeCallback}></input>
+        <InputLabel>volume</InputLabel>
+        <input type="range" min="-60" max="0" defaultValue="-15" class="slider" id="volSlider" onInput={volumeCallback} />
+        <InputLabel id="bpmLabel">bpm: {bpm}</InputLabel>
+        <input type="range" min="60" max="220" defaultValue="80" class="slider" id="bpmSlider" onInput={bpmCallback} />
       </Grid>
       <Grid item xs={12}>
         <DraggableList id="scope" length={4} callback={updateMap}/>
