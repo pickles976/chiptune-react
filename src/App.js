@@ -19,7 +19,7 @@ function App() {
   // Hard-coded instrumnet nums per channel
   const instrumentNums = [80,80,39,118];
   let mapping = [0,1,2,3];
-  let bpm = 80;
+  let bpm = 120;
 
   // The Global value of our MIDI object w/ channels and notes
   let midi = null;
@@ -179,7 +179,10 @@ function App() {
     for(let i = 0; i < midi.tracks.length;i++){
       midi.tracks[i].instrument.number = instrumentNums[mapping[i]]
       midi.tracks[i].channel = 3-i
+
+      midi.header.tempos[i].bpm = bpm;
     }
+
     const url = window.URL.createObjectURL(new Blob([midi.toArray()]));
     const link = document.createElement('a');
     link.href = url;
@@ -230,13 +233,17 @@ function App() {
       </Grid>
     </Grid>
     <Grid container spacing={2} id="midistuff" style={{display: "none"}}>
-      <Grid item xs={12}>
+      <Grid item xs={12} style={{ display: "flex", justifyContent: "flex-start", spacing: 20 }}>
         <button onClick={playPause}>Play</button>
         <button onClick={stop}>Stop</button>
-        <InputLabel>volume</InputLabel>
-        <input type="range" min="-60" max="0" defaultValue="-15" class="slider" id="volSlider" onInput={volumeCallback} />
-        <InputLabel id="bpmLabel">bpm: {bpm}</InputLabel>
-        <input type="range" min="60" max="220" defaultValue="80" class="slider" id="bpmSlider" onInput={bpmCallback} />
+        <div>
+          <InputLabel style={{textAlign: 'center'}}>volume</InputLabel>
+          <input type="range" min="-60" max="0" defaultValue="-15" class="slider" id="volSlider" onInput={volumeCallback} />
+        </div>
+        <div>
+          <InputLabel id="bpmLabel" style={{textAlign: 'center'}}>bpm: {bpm}</InputLabel>
+          <input type="range" min="60" max="240" defaultValue="120" class="slider" id="bpmSlider" onInput={bpmCallback} />
+        </div>
       </Grid>
       <Grid item xs={12}>
         <DraggableList id="scope" length={4} callback={updateMap}/>
