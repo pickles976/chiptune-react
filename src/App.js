@@ -179,8 +179,6 @@ function App() {
     for(let i = 0; i < midi.tracks.length;i++){
       midi.tracks[i].instrument.number = instrumentNums[mapping[i]]
       midi.tracks[i].channel = 3-i
-
-      midi.header.tempos[i].bpm = bpm;
     }
 
     const url = window.URL.createObjectURL(new Blob([midi.toArray()]));
@@ -208,7 +206,7 @@ function App() {
           <Toolbar>
             <Typography variant="h6"
               component="div" sx={{ flexGrow: 1 }}>
-              Chiptune Generator v1.0
+              Chiptune Generator v1.1
             </Typography>
           </Toolbar>
       </AppBar>
