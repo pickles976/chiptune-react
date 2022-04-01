@@ -204,8 +204,8 @@ function App() {
     <div>
       <AppBar position="static">
           <Toolbar>
-            <Typography variant="h6"
-              component="div" sx={{ flexGrow: 1 }}>
+            <Typography variant="h1"
+              component="div" sx={{ flexGrow: 1 }} style={{fontSize: 32}}>
               Chiptune Generator v1.1
             </Typography>
           </Toolbar>
