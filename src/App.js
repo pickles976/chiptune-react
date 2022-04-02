@@ -217,7 +217,7 @@ function App() {
             </Typography>
           </Toolbar> */}
           <div class="title-bar">
-            <div class="title-bar-text">Chiptune Generator v1.1</div>
+            <div class="title-bar-text">Chiptune Generator v1.2</div>
           </div>
       </AppBar>
     </div>
