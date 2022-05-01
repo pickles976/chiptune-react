@@ -1,4 +1,4 @@
-import './App.css';
+// import './App.css';
 import "./DraggableList.jsx";
 import DraggableList from './DraggableList.jsx';
 
@@ -11,6 +11,8 @@ import { Audio } from  "react-loader-spinner";
 // local files
 import {getMidi, getInstruments, getNotes, getParts, saveMidi, saveMidiFromString} from "./utils/midi.js";
 import {getAnalysers, allContext, drawWave, onLoad} from "./utils/visualize";
+
+import "98.css";
 
 function App() {
 
@@ -172,6 +174,11 @@ function App() {
     }
   }
 
+  // lets us click a separate button
+  function midiClick(){
+    document.getElementById('file-selector').click();
+  }
+
   // download the midi
   function downloadMidi(){
     console.log(midi)
@@ -203,12 +210,15 @@ function App() {
     {/* HEADER */}
     <div>
       <AppBar position="static">
-          <Toolbar>
+          {/* <Toolbar>
             <Typography variant="h1"
               component="div" sx={{ flexGrow: 1 }} style={{fontSize: 32}}>
               Chiptune Generator v1.1
             </Typography>
-          </Toolbar>
+          </Toolbar> */}
+          <div class="title-bar">
+            <div class="title-bar-text">Chiptune Generator v1.2</div>
+          </div>
       </AppBar>
     </div>
     {/* BODY */}
@@ -220,13 +230,16 @@ function App() {
             <button onClick={requestSong}>Generate</button>
           </div>
           <div id="loadingBar" style={{display: "none"}}>
-            <Audio color="#00BFFF" height={60} width={60}/>
+            {/* <Audio color="#00BFFF" height={60} width={60}/> */}
+            <div class="status-bar">
+              <p class="status-bar-field" id="loading-text">Your song is loading</p>
+            </div>
           </div>
           <text id="errorText" style={{display: "none", color: "rgb(1.0,0.0,0.0)"}}>Error connecting to server!</text>
       </Grid>
       <Grid item xs={6}>
         <td><label>Load a File Locally</label></td>
-        <input type='file' id='file-selector' accept=".mid" onInput={loadFile}></input>
+        <button onClick={midiClick}>File Upload</button>
         <text id="channelError" style={{display: "none", color: "rgb(1.0,0.0,0.0)"}}>Cannot load MIDI-- too many channels!</text>
       </Grid>
     </Grid>
@@ -247,16 +260,19 @@ function App() {
         <DraggableList id="scope" length={4} callback={updateMap}/>
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="h6" 
-            component="div" sx={{ flexGrow: 1 }}>
+        {/* <Typography variant="h6" 
+            component="div" sx={{ flexGrow: 1 }} style={{font: "ms-sans-serif"}}>
             Drag and Drop the channels to switch waveforms
-          </Typography>
+          </Typography> */}
+        Drag and Drop the channels to switch waveforms
       </Grid>
       <Grid item xs={12}>
         <button onClick={downloadMidi}>Download</button>
       </Grid>
     </Grid>
     </div>
+    {/* file upload dialog */}
+    <input type='file' id='file-selector' accept=".mid" onInput={loadFile} style={{display: "none"}}></input>
     </>
   );
 }
