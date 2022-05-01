@@ -5,7 +5,7 @@ import * as options from "./options.js";
 
 const TRACK_NUM = 4;
 
-// Convert a Base64 binary string to Blob object
+// Convert a Base64 binary string to Blob object (black magic)
 function base64toBlob(base64Data, contentType) {
     var sliceSize = 1024;
     var byteCharacters = atob(base64Data);

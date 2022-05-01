@@ -28,8 +28,9 @@ function App() {
   let instruments = [];
   let notes = [];
 
-  // const url = "http://localhost:5000/getMidi"
-  const url = "https://vlpmiuk1fk.execute-api.us-east-2.amazonaws.com/default/midi-generator"
+  const url_new = "http://localhost:5000/getMidi";
+  const url_shuffle = "http://localhost:5000/shuffleMidi";
+  // const url = "https://vlpmiuk1fk.execute-api.us-east-2.amazonaws.com/default/midi-generator"
 
   // stop playback
   function stop() {
@@ -46,6 +47,7 @@ function App() {
     }  
   }
 
+  // refreshes the Canvas Contexts for drawing, part of initialization
   function updateContext(){
     
     // Show midi control panel
@@ -79,7 +81,7 @@ function App() {
     Transport.bpm.value = e.target.value;
   }
 
-  //load midifile
+  //load midifile into player
   function loadFile() {
 
     // hide error message
@@ -126,16 +128,34 @@ function App() {
     songRequester.style.display = "block";
   }
 
-  // Request a MIDI from server
-  function requestSong(){
+  // show loading bar
+  function showShuffle(){
+    const songRequester = document.getElementById("songShuffler");
+    const loadingBar = document.getElementById("shuffleBar");
+    loadingBar.style.display = "block";
+    songRequester.style.display = "none";
+  }
 
-    // hide error text
-    document.getElementById('errorText').style.display = "none";
-    showbar();
+  // hide loading bar
+  function hideShuffle(){
+    const songRequester = document.getElementById("songShuffler");
+    const loadingBar = document.getElementById("shuffleBar");
+    loadingBar.style.display = "none";
+    songRequester.style.display = "block";
+  }
 
-    // request generated midi song from server
-    // axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
-    axios.get(url, { "Access-Control-Allow-Origin": '*', Connection: "keep-alive" }).then((response) => {
+  function getRandomInt() {
+    let min = Math.ceil(1000000000); // 1B
+    let max = Math.floor(-1000000000); // -1B
+    return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+  }
+
+  function randomizeSeed(){
+    document.getElementById("seed").value = getRandomInt();
+  }
+
+  function axiosPost(url,data){
+    axios.post(url,data,{ "Access-Control-Allow-Origin": '*', Connection: "keep-alive" }).then((response) => {
 
       // Stop any playback and clear current song
       stop();
@@ -154,13 +174,31 @@ function App() {
 
         updateContext();
         hidebar();
+        hideShuffle();
 
       })
     }).catch((error) => {
       // throw error
       document.getElementById('errorText').style.display = "block";
       hidebar();
+      hideShuffle();
     });
+  }
+
+  // Request a MIDI from server
+  function requestSong(){
+
+    // hide error text
+    document.getElementById('errorText').style.display = "none";
+    showbar();
+
+    let formData = new FormData();
+    formData.append('seed', document.getElementById("seed").value);
+
+    // request generated midi song from server
+    // axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
+    // axios.get(url, { "Access-Control-Allow-Origin": '*', Connection: "keep-alive" }).then((response) => {
+    axiosPost(url_new,formData);
 
   }
 
@@ -198,6 +236,36 @@ function App() {
     link.click();
   }
 
+  // Send our midi back to the server with constraints
+  function shuffleTracks(){
+
+    showShuffle();
+
+    // re-shuffle midi tracks to match
+    for(let i = 0; i < midi.tracks.length;i++){
+      midi.tracks[i].instrument.number = instrumentNums[mapping[i]]
+      midi.tracks[i].channel = 3-i
+    }
+
+    // midi to blob
+    const midiBlob = new Blob([midi.toArray()]);
+    let midiString = "";
+
+    // blob to base64 string
+    let reader = new FileReader();
+    reader.readAsDataURL(midiBlob); 
+    reader.onloadend = function() {
+      midiString = reader.result; 
+      console.log(midiString);
+      let formData = new FormData();
+      formData.append('seed', document.getElementById("seed").value);
+      formData.append('midi', midiString);
+      formData.append("tracks",document.getElementById("channels").value);
+  
+      axiosPost(url_shuffle,formData);               
+    }
+  }
+
   // Runs once on component mount
   useEffect(() => {
     // call initializers
@@ -224,18 +292,24 @@ function App() {
     {/* BODY */}
     <div style={{padding: "10px", alignItems: "center"}}>
     <Grid container spacing={2}>
-      <Grid item xs={6}>
+      <Grid item xs={1}>
           <div id="songRequester">
             <td><label>Generate A Song</label></td>
             <button onClick={requestSong}>Generate</button>
           </div>
           <div id="loadingBar" style={{display: "none"}}>
-            {/* <Audio color="#00BFFF" height={60} width={60}/> */}
             <div class="status-bar">
               <p class="status-bar-field" id="loading-text">Your song is loading</p>
             </div>
           </div>
           <text id="errorText" style={{display: "none", color: "rgb(1.0,0.0,0.0)"}}>Error connecting to server!</text>
+      </Grid>
+      <Grid item xs={5}>
+        <div>
+              <td><label for="seed">Seed</label></td>
+              <input type="number" id="seed" name="seed" defaultValue={getRandomInt()}/>
+              <button onClick={randomizeSeed}>Random</button>
+        </div>
       </Grid>
       <Grid item xs={6}>
         <td><label>Load a File Locally</label></td>
@@ -260,11 +334,27 @@ function App() {
         <DraggableList id="scope" length={4} callback={updateMap}/>
       </Grid>
       <Grid item xs={12}>
-        {/* <Typography variant="h6" 
-            component="div" sx={{ flexGrow: 1 }} style={{font: "ms-sans-serif"}}>
-            Drag and Drop the channels to switch waveforms
-          </Typography> */}
         Drag and Drop the channels to switch waveforms
+      </Grid>
+      <Grid item xs={12}> 
+        <select id="channels" name="channels">
+          <option selected="">0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+        </select>
+        Number of waveforms to keep. Starting with first on the left.
+      </Grid>
+      <Grid item xs={12}>
+        <div id="songShuffler">
+            <td><label>Generate new Tracks</label></td>
+            <button onClick={shuffleTracks}>Generate</button>
+        </div>
+        <div id="shuffleBar" style={{display: "none"}}>
+          <div class="status-bar">
+            <p class="status-bar-field" id="loading-text">Your song is loading</p>
+          </div>
+        </div>
       </Grid>
       <Grid item xs={12}>
         <button onClick={downloadMidi}>Download</button>
