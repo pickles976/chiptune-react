@@ -146,7 +146,7 @@ function App() {
 
   function getRandomInt() {
     let min = Math.ceil(1000000000); // 1B
-    let max = Math.floor(-1000000000); // -1B
+    let max = 0;
     return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
   }
 
