@@ -1,6 +1,5 @@
 import {Midi} from "@tonejs/midi";
-import { Buffer } from "buffer";
-import Tone, {PolySynth,Synth, NoiseSynth, Part} from "tone";
+import {PolySynth,Synth, NoiseSynth, Part} from "tone";
 import * as options from "./options.js";
 
 const TRACK_NUM = 4;

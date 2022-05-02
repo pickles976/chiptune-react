@@ -8,9 +8,6 @@ let canvasWidth = 0, canvasHeight = 0;
 // HORizontal and VERTical lines
 const VERT = 4, HOR = 6;
 
-// Blue, Red, Yellow, Black
-let colors = {0: "#569dcb", 1: "#f9b131", 2: "#FF2326", 3: "#FFFFFF"};
-
 // Draw black background
 export function onLoad(){
 
@@ -77,7 +74,7 @@ export function allContext(instruments) {
 
 
 // Create soundwave of each instrument
-export function createWave(canv, values, color) {
+export function createWave(canv, values) {
 
     // clear the image
     const context = canv.getContext('2d');

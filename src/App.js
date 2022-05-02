@@ -5,8 +5,7 @@ import DraggableList from './DraggableList.jsx';
 import React, {useEffect} from "react";
 import axios from "axios";
 import {Transport, Draw, getDestination} from "tone";
-import { Grid, Typography, Toolbar,AppBar,InputLabel} from "@material-ui/core";
-import { Audio } from  "react-loader-spinner";
+import { Grid, AppBar,InputLabel} from "@material-ui/core";
 
 // local files
 import {getMidi, getInstruments, getNotes, getParts, saveMidi, saveMidiFromString} from "./utils/midi.js";
@@ -30,22 +29,8 @@ function App() {
 
   const url_new = "http://localhost:5000/getMidi";
   const url_shuffle = "http://localhost:5000/shuffleMidi";
-  // const url = "https://vlpmiuk1fk.execute-api.us-east-2.amazonaws.com/default/midi-generator"
 
-  // stop playback
-  function stop() {
-    Transport.stop();
-  }
-  
-  // Start playback
-  function playPause() {
-    if (Transport.state === 'started') {
-        Transport.pause();
-    }
-    else {
-        Transport.start()
-    }  
-  }
+  /* ESOTERIC SHIT */
 
   // refreshes the Canvas Contexts for drawing, part of initialization
   function updateContext(){
@@ -70,10 +55,39 @@ function App() {
     });
   }
 
+  // update the channel mapping based on Waveforms
+  function updateMap(newMapping){
+    if (midi) {
+      mapping = newMapping;
+      instruments = getInstruments(mapping);
+      notes = getNotes(midi);
+      updateContext();
+    }
+  }
+
+  /* CALLBACKS */
+
+  // stop playback
+  function stop() {
+    Transport.stop();
+  }
+  
+  // start playback
+  function playPause() {
+    if (Transport.state === 'started') {
+        Transport.pause();
+    }
+    else {
+        Transport.start()
+    }  
+  }
+
+  // callback for the volume slider
   function volumeCallback(e) {
     getDestination().volume.value = e.target.value;
   }
 
+  // callback for the bpm slider
   function bpmCallback(e) {
     bpm = e.target.value;
     const bpmlabel = document.getElementById("bpmLabel");
@@ -81,7 +95,7 @@ function App() {
     Transport.bpm.value = e.target.value;
   }
 
-  //load midifile into player
+  //load local midifile into player
   function loadFile() {
 
     // hide error message
@@ -128,7 +142,7 @@ function App() {
     songRequester.style.display = "block";
   }
 
-  // show loading bar
+  // show shuffle functionality loading bar
   function showShuffle(){
     const songRequester = document.getElementById("songShuffler");
     const loadingBar = document.getElementById("shuffleBar");
@@ -136,12 +150,17 @@ function App() {
     songRequester.style.display = "none";
   }
 
-  // hide loading bar
+  // hide shuffle functionality loading bar
   function hideShuffle(){
     const songRequester = document.getElementById("songShuffler");
     const loadingBar = document.getElementById("shuffleBar");
     loadingBar.style.display = "none";
     songRequester.style.display = "block";
+  }
+
+  // abstracts a button press
+  function midiClick(){
+    document.getElementById('file-selector').click();
   }
 
   function getRandomInt() {
@@ -154,6 +173,9 @@ function App() {
     document.getElementById("seed").value = getRandomInt();
   }
 
+  /* REQUEST METHODS */
+
+  // function that encapsulates the Axios call
   function axiosPost(url,data){
     axios.post(url,data,{ "Access-Control-Allow-Origin": '*', Connection: "keep-alive" }).then((response) => {
 
@@ -195,26 +217,8 @@ function App() {
     let formData = new FormData();
     formData.append('seed', document.getElementById("seed").value);
 
-    // request generated midi song from server
-    // axios.get(url,{ responseType: 'blob',Accept: "*/*", Connection: "keep-alive" }).then((response) => {
-    // axios.get(url, { "Access-Control-Allow-Origin": '*', Connection: "keep-alive" }).then((response) => {
     axiosPost(url_new,formData);
 
-  }
-
-  // update the channel mapping based on Waveforms
-  function updateMap(newMapping){
-    if (midi) {
-      mapping = newMapping;
-      instruments = getInstruments(mapping);
-      notes = getNotes(midi);
-      updateContext();
-    }
-  }
-
-  // lets us click a separate button
-  function midiClick(){
-    document.getElementById('file-selector').click();
   }
 
   // download the midi
@@ -236,7 +240,7 @@ function App() {
     link.click();
   }
 
-  // Send our midi back to the server with constraints
+  // send midi back to the server to be shuffled
   function shuffleTracks(){
 
     showShuffle();
@@ -291,6 +295,8 @@ function App() {
     </div>
     {/* BODY */}
     <div style={{padding: "10px", alignItems: "center"}}>
+
+    {/* MIDI REQUEST AREA */}
     <Grid container spacing={2}>
       <Grid item xs={1}>
           <div id="songRequester">
@@ -317,6 +323,8 @@ function App() {
         <text id="channelError" style={{display: "none", color: "rgb(1.0,0.0,0.0)"}}>Cannot load MIDI-- too many channels!</text>
       </Grid>
     </Grid>
+
+    {/* MIDI VISUALIZATION AREA */}
     <Grid container spacing={2} id="midistuff" style={{display: "none"}}>
       <Grid item xs={12} style={{ display: "flex", justifyContent: "flex-start", spacing: 20 }}>
         <button onClick={playPause}>Play</button>
