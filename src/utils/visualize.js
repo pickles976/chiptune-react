@@ -13,12 +13,14 @@ export function onLoad(){
 
   for (let i = 0; i < 4; i++){
     const canvas = document.querySelector('#wave' + i); // has style information
-    const context = canvas.getContext('2d'); // has drawing context
-    canvasWidth = canvas.width;
-    canvasHeight = canvas.height;
-    context.fillStyle = 'rgba(0,0,0,1.0)';
-    context.fillRect(0,0,canvasWidth,canvasHeight);
-    drawGrid(context);
+    if (canvas) {
+      const context = canvas.getContext('2d'); // has drawing context
+      canvasWidth = canvas.width;
+      canvasHeight = canvas.height;
+      context.fillStyle = 'rgba(0,0,0,1.0)';
+      context.fillRect(0,0,canvasWidth,canvasHeight);
+      drawGrid(context);
+    }
   }
 
 }

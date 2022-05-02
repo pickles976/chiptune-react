@@ -41,6 +41,7 @@ function App() {
 
     // stop transport object
     Transport.cancel();
+    Transport.clear();
 
     // Load and schedule each part for tracks that have notes
     getAnalysers(instruments,mapping);
@@ -190,7 +191,7 @@ function App() {
       midiData.then((midiData) => {
 
         midi = midiData;
-        mapping = [0,1,2,3];
+        updateMap([0,1,2,3]);
         instruments = getInstruments(mapping);
         notes = getNotes(midi);
 
@@ -245,10 +246,12 @@ function App() {
 
     showShuffle();
 
+    let temp =  JSON.parse(JSON.stringify(midi.tracks))
+
     // re-shuffle midi tracks to match
     for(let i = 0; i < midi.tracks.length;i++){
-      midi.tracks[i].instrument.number = instrumentNums[mapping[i]]
-      midi.tracks[i].channel = 3-i
+      midi.tracks[i] = temp[mapping[i]]
+      // midi.tracks[i].channel = 3-i
     }
 
     // midi to blob
@@ -282,14 +285,8 @@ function App() {
     {/* HEADER */}
     <div>
       <AppBar position="static">
-          {/* <Toolbar>
-            <Typography variant="h1"
-              component="div" sx={{ flexGrow: 1 }} style={{fontSize: 32}}>
-              Chiptune Generator v1.1
-            </Typography>
-          </Toolbar> */}
           <div class="title-bar">
-            <div class="title-bar-text">Chiptune Generator v1.2</div>
+            <div class="title-bar-text">Chiptune Generator v1.3</div>
           </div>
       </AppBar>
     </div>
@@ -339,7 +336,7 @@ function App() {
         </div>
       </Grid>
       <Grid item xs={12}>
-        <DraggableList id="scope" length={4} callback={updateMap}/>
+          <DraggableList id="scope" length={4} callback={updateMap}/>
       </Grid>
       <Grid item xs={12}>
         Drag and Drop the channels to switch waveforms
