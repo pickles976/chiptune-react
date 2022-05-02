@@ -1,4 +1,4 @@
-# Chiptune.app
+# [Chiptune.app](https://www.chiptune.app)
 
 This is the front-end portion of a web application for generating chiptune music. The training and server-side code is here:  
 https://github.com/pickles976/chiptune-ai
