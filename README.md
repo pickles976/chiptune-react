@@ -11,7 +11,8 @@ This page also uses the [98.css](https://jdan.github.io/98.css/) stylesheet
 ## Running locally
 
 1. Clone the repo
-2. At the project root run
+2. Checkout and pull the branch "modifyTracks"
+3. At the project root run
 `
   npm install
 `
